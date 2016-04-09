@@ -10,9 +10,12 @@ public class FieldController : MonoBehaviour
     protected QubeBehaviour[,] columns;
 
     //"затухание" цвета
-    [Range(0.1f, 20.0f)]
+    [Range(0f, 2.0f)]
     [SerializeField]
-    protected float attenuation = 3f;
+    protected float attenuation = 0.5f;
+
+    public Color idle;
+    public Color active;
 
     //закешированный трансформ
     protected Transform tr;
@@ -39,29 +42,33 @@ public class FieldController : MonoBehaviour
                 columns[i, j] = newObj.GetComponent<QubeBehaviour>();
                 columns[i, j].position = new Vector2(i, j);
                 Vector3 newPosition = new Vector3(i - width / 2f+0.5f, 0, j - HEIGHT / 2f+ 0.5f);
-                Debug.Log(newPosition.x + " " + newPosition.z);
                 newObj.transform.position = newPosition;
                 newObj.transform.SetParent(tr);
             }
-        QubeBehaviour.waweSpeed = attenuation;
         QubeBehaviour.mouseEnter = OnMouseEnter;
         QubeBehaviour.mouseExit = OnMouseExit;
+
+        QubeBehaviour.idleColor = idle;
+        QubeBehaviour.activeColor = active;
+
+        QubeBehaviour.attenuation = attenuation;
     }
 
     protected virtual void OnMouseEnter(int x, int y)
     {
+        /*
         QubeBehaviour.isIdle = false;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < HEIGHT; j++)
                 columns[i, j].target = 1 / ((GetDistance(x, y, i, j) + 1));
         columns[x, y].target = 1;
+        */
     }
     protected virtual void OnMouseExit()
     {
         for (int i = 0; i < width; i++)
             for (int j = 0; j < HEIGHT; j++)
             {
-                columns[i, j].target = 0;
             }
     }
 
