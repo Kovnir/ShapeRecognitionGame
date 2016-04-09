@@ -11,7 +11,6 @@ public class QubeBehaviour : MonoBehaviour
 
     public float target = 0;
     public float current = 0;
-    public static float amplitude = 8;
 
     public float value;
 
@@ -43,7 +42,7 @@ public class QubeBehaviour : MonoBehaviour
         }
 
         float difference = (Mathf.Lerp(current, target, 0.5f) - current) * Time.deltaTime * speed;
-        column.position += new Vector3(0, difference * amplitude, 0);
+        column.position += new Vector3(0, difference, 0);
         current += difference;
     }
 
