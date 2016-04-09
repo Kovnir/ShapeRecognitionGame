@@ -3,6 +3,7 @@ using System;
 
 public class FieldController : MonoBehaviour
 {
+    [SerializeField]
     private const uint HEIGHT = 10;
     private uint width;
 
@@ -52,7 +53,9 @@ public class FieldController : MonoBehaviour
         QubeBehaviour.activeColor = active;
 
         QubeBehaviour.attenuation = attenuation;
+
     }
+
 
     protected virtual void OnMouseEnter(int x, int y)
     {
