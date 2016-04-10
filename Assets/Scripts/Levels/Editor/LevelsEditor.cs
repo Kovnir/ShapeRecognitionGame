@@ -30,7 +30,7 @@ public class LevelsEditor : Editor {
 
 
     [MenuItem ("Shape Recognition/Create new Level Editor")]
-    static void CreateSoundEditor()
+    static void CreateLevelEditor()
     {
         string path = EditorUtility.SaveFilePanel("Create Level Editor",
                                                   "Assets/Scripts/Levels/Resources",
@@ -65,6 +65,9 @@ public class LevelsEditor : Editor {
             Target.levels.Add(additionLevel);
             additionLevel = new Level();
             IsAddingLevel = false;
+            selectedLevel = Target.levels.Count-1;
+            editingLevel = Target.levels[selectedLevel].Clone();
+            selectedGrid = -1;
         }
         if (GUILayout.Button("Cancel"))
         {
@@ -90,7 +93,11 @@ public class LevelsEditor : Editor {
         {
             level.grids.Add(new Level.LevelGrid((int)newGridHeight, (int)newGridWidth));
         }
-
+        if (GUILayout.Button("Remove Visual"))
+        {
+            level.grids.RemoveAt(selectedGrid);
+            selectedGrid = -1;
+        }
 
         if (selectedGrid != -1)
         {
@@ -102,7 +109,7 @@ public class LevelsEditor : Editor {
                 {
                     EditorGUILayout.BeginHorizontal();
                     for (int y = 0; y < level.grids[selectedGrid].width; y++)
-                        level.grids[selectedGrid].grid[x,y] = EditorGUILayout.Toggle(level.grids[selectedGrid].grid[x, y]);
+                        level.grids[selectedGrid].grid[x/*,y*/][y] = EditorGUILayout.Toggle(level.grids[selectedGrid].grid[x/*, y*/][y]);
                     EditorGUILayout.EndHorizontal();
                 }
                 EditorGUILayout.EndVertical();
@@ -155,6 +162,7 @@ public class LevelsEditor : Editor {
             if (GUILayout.Button("Create new Level"))
             {
                 IsAddingLevel = true;
+                selectedGrid = -1;
                 editingLevel = new Level();
             }
         }
@@ -184,6 +192,7 @@ public class LevelsEditor : Editor {
         {
             selectedLevel = newSelected;
             editingLevel = Target.levels[selectedLevel].Clone();
+            selectedGrid = -1;
         }
     }
     private void UpdateViewList(List<Level.LevelGrid> grids)

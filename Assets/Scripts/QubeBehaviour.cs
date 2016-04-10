@@ -4,15 +4,15 @@ using System;
 
 public class QubeBehaviour : MonoBehaviour
 {
-    public Vector2 position;
+    public bool selected = false; 
+
+//    public Vector2 position;
     protected Transform column;
 
     public static Color idleColor;
     public static Color activeColor;
     public static float attenuation;
-
-    public static Action<int, int> mouseEnter;
-    public static Action mouseExit;
+    
     public static bool isIdle = false;
     
     private Color currentColor;
@@ -34,23 +34,32 @@ public class QubeBehaviour : MonoBehaviour
 
     void OnMouseEnter()
     {
+        if (!Input.GetMouseButton(0))
+        {
+            if (FieldController.Instance.isMouseDowned)
+                FieldController.Instance.OnMouseExit();
+            return;
+        }
         rend.material.SetColor("_Color", activeColor);
         currentColor = activeColor;
-        //mouseEnter((int)position.x, (int)position.y);
-    } //вызывается в момент захода мыши на коллайдер объекта
-    void OnMouseExit() { mouseExit(); } //вызывается в момент выхода мыши с коллайдера объекта
+        selected = true;
+    }
+
+    void OnMouseDown()
+    {
+        OnMouseEnter();
+        FieldController.Instance.OnMouseDown();
+    }
+
+    void OnMouseUp()
+    {
+        FieldController.Instance.OnMouseExit();
+    } 
+
 
     private void Update()
     {
         currentColor = Color.Lerp(currentColor, idleColor, Mathf.PingPong(Time.time, 1)* attenuation);
         rend.material.SetColor("_Color", currentColor);
-    }
-
-    protected virtual float IdleUpdate(float speed)
-    {
-        return speed;
-    }
-    protected virtual void InteractiveUpdate(float speed)
-    {
     }
 }
