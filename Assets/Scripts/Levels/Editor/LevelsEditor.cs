@@ -162,6 +162,15 @@ public class LevelsEditor : Editor {
                 editingLevel = new Level();
             }
         }
+        Separator();
+        if (GUILayout.Button("Delete empty units"))
+        {
+            List<Level> levelsToRemove = new List<Level>();
+            Target.levels.ForEach((x) => { if (x.name == "") levelsToRemove.Add(x); });
+            foreach (Level level in levelsToRemove)
+                Target.levels.Remove(level);
+        }
+
     }
 
     public override void OnInspectorGUI()
@@ -173,6 +182,7 @@ public class LevelsEditor : Editor {
             DrawAddingPanel();
         else
             DrawEditionPanel();
+        
 
         if (GUI.changed)                                //если что-то изменилось
             EditorUtility.SetDirty(target);             //устанавливаем Dirty-флаг для сохранения данных на диск
