@@ -9,6 +9,8 @@ public class CountDown : MonoBehaviour {
 
     private static CountDown instance;
     public static CountDown Instance { get { return instance; } }
+    private bool isPaused = false;
+
 
     void Awake()
     {
@@ -17,17 +19,30 @@ public class CountDown : MonoBehaviour {
     }
 
 	public void StartCountDown (int time) {
+        Stop();
+        isPaused = false;
         coroutine = CountDownCoroutine(time);
         StartCoroutine(coroutine);
 	}
 	
+    public void Pause()
+    {
+        isPaused = true;
+    }
+
+    public void Stop()
+    {
+        if (coroutine != null) StopCoroutine(coroutine);
+    }
+
     IEnumerator CountDownCoroutine(int time)
     {
-        while (time > 0)
+        while (time > -1)
         {
             text.text = time.ToString();
-            yield return new WaitForSeconds(0);
-            time--;
+            yield return new WaitForSeconds(1);
+            if (!isPaused) time--;
         }
+        GameController.Instance.GameOver();
     }
 }

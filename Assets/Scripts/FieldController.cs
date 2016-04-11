@@ -172,7 +172,7 @@ public class FieldController : MonoBehaviour
                 columns[i, j].selected = false;
             }
         TaskMenu.Instance.SetScore(result);
-        turnAllowed = true;
+        GameController.Instance.NextFigure();
     }
     
     protected float GetDistance(int x1, int y1, int x2, int y2)
