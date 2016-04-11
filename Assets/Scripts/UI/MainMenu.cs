@@ -18,6 +18,7 @@ public class MainMenu : MonoBehaviour {
                 score.text = "Best score = " + GameStats.bestScore;
         }
     }
+    
 
     public void Quit()
     {

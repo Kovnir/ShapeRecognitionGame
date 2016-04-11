@@ -11,7 +11,17 @@ public class ThreadManager : MonoBehaviour {
 
     private static ThreadManager instance;
     public static ThreadManager Instance { get { return instance; } }
-    private void Awake() { instance = this; }
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        DontDestroyOnLoad(this);
+        instance = this;
+    }
+
 
     void Update()
     {

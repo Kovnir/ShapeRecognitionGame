@@ -126,7 +126,6 @@ public class FieldController : MonoBehaviour
 
     public void ComporateFinish(Level.LevelGrid grid, int xOffset, int yOffset, float result)
     {
-        Debug.Log("ComporateFinish");
         StartCoroutine(ComporateFinishCoroutine(grid, xOffset, yOffset, result));
     }
     private IEnumerator ComporateFinishCoroutine(Level.LevelGrid grid, int xOffset, int yOffset, float result)
@@ -181,7 +180,6 @@ public class FieldController : MonoBehaviour
     private void Check(float result)
     {
         int percents = Mathf.RoundToInt(result*100);
-        Debug.Log(percents);
         if (percents < CORRECT_PERCENTS)
         {
             CountDown.Instance.Continue();

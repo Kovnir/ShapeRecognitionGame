@@ -13,7 +13,10 @@ public sealed class GameController {
     private List<Level> levels;
     private List<int> times;
     
-    private GameController() { }
+    private GameController()
+    {
+
+    }
 
     public void StartGame()
     {
