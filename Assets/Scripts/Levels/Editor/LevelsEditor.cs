@@ -74,10 +74,6 @@ public class LevelsEditor : Editor {
             IsAddingLevel = false;
         }
         EditorGUI.indentLevel--;
-
-
-    //    EditorGUILayout.EndFadeGroup();
-
     }
     private void DrawLevel(Level level)
     {
@@ -105,7 +101,7 @@ public class LevelsEditor : Editor {
             if (showVisual)
             {
                 EditorGUILayout.BeginVertical();
-                for (int x = 0; x < level.grids[selectedGrid].height; x++)
+                for (int x = level.grids[selectedGrid].height -1; x > -1; x--)
                 {
                     EditorGUILayout.BeginHorizontal();
                     for (int y = 0; y < level.grids[selectedGrid].width; y++)

@@ -63,7 +63,7 @@ public class Level {
             float best = 0;
             int bestXOffset = 0;
             int bestYOffset = 0;
-            bool templateIsSmaller = true;
+            bool templateIsLessHight = true;
 
             bool[,] smallHeightFigure = GetArray();            //меньшая по ширине фигура
             bool[,] bigHeightFigure = usersFigure;       //большая по ширине фигура
@@ -73,18 +73,26 @@ public class Level {
                 bool[,] buffer = smallHeightFigure;
                 smallHeightFigure = bigHeightFigure;
                 bigHeightFigure = buffer;
-                templateIsSmaller = !templateIsSmaller;
+                templateIsLessHight = !templateIsLessHight;
             }
 
-            bigHeightFigure = Extend(bigHeightFigure, bigHeightFigure.GetLength(0) + 2, bigHeightFigure.GetLength(1), 1, 0);
+
+            bigHeightFigure = Extend(bigHeightFigure, bigHeightFigure.GetLength(0) + 2*smallHeightFigure.GetLength(0)-2, bigHeightFigure.GetLength(1), smallHeightFigure.GetLength(0)-1, 0);
 
             for (int x = 0; x < bigHeightFigure.GetLength(0) - smallHeightFigure.GetLength(0) + 1; x++)
             {
                 int xOffset = 0;
+                bool templateIsLessWidth = templateIsLessHight;
+
+                if (templateIsLessHight)
+                    xOffset -= smallHeightFigure.GetLength(0) - 1;
+                else
+                    xOffset += smallHeightFigure.GetLength(0) - 1;
+
                 bool[,] smallWidthFigure = Extend(smallHeightFigure, bigHeightFigure.GetLength(0), smallHeightFigure.GetLength(1), x, 0);
-                if (templateIsSmaller)
+                if (templateIsLessHight)
                 {
-                    xOffset = x-1;
+                    xOffset += x/*-1*/;
                 }
                 //увеличим до нужной ширины
                 bool[,] bigWidthFigure = bigHeightFigure;       //большая по высоте фигура
@@ -94,18 +102,24 @@ public class Level {
                     bool[,] buffer = smallWidthFigure;
                     smallWidthFigure = bigWidthFigure;
                     bigWidthFigure = buffer;
-                    templateIsSmaller = !templateIsSmaller;
+                    templateIsLessWidth = !templateIsLessWidth;
                 }
 
-                bigWidthFigure = Extend(bigWidthFigure, bigWidthFigure.GetLength(0), bigWidthFigure.GetLength(1)+2, 0, 1);
+                bigWidthFigure = Extend(bigWidthFigure, bigWidthFigure.GetLength(0), bigWidthFigure.GetLength(1)+smallWidthFigure.GetLength(1)*2 -2, 0, smallWidthFigure.GetLength(1)-1);
 
                 for (int y = 0; y < bigWidthFigure.GetLength(1) - smallWidthFigure.GetLength(1) + 1; y++)
                 {
                     int yOffset = 0;
+
+                    if (templateIsLessWidth)
+                        yOffset -= smallWidthFigure.GetLength(1) - 1;
+                    else
+                        yOffset += smallWidthFigure.GetLength(1) - 1;
+
                     bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1), 0, y);   //увеличим до нужной ширины
-                    if (templateIsSmaller)
+                    if (templateIsLessWidth)
                     {
-                        yOffset = y-1;
+                        yOffset += y/*-1*/;
                     }
                     float newScore = SimpleComparate(smallWidthModifiedFigure, bigWidthFigure);
                     if (newScore > best)
@@ -184,11 +198,15 @@ public class Level {
             Level.LevelGrid resultGrid = null;
             foreach (LevelGrid grid in grids)
             {
-                float newResult = grid.Comparate(usersFigure, out xOffset, out yOffset);
+                int xBufOffset = 0;
+                int yBufOffset = 0;
+                float newResult = grid.Comparate(usersFigure, out xBufOffset, out yBufOffset);
                 if (newResult > result)
                 {
                     result = newResult;
                     resultGrid = grid;
+                    xOffset = xBufOffset;
+                    yOffset = yBufOffset;
                     if (result == 1)
                         break;
                 }
