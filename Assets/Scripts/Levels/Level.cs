@@ -86,8 +86,8 @@ public class Level {
 
                 if (templateIsLessHight)
                     xOffset -= smallHeightFigure.GetLength(0) - 1;
-                else
-                    xOffset += smallHeightFigure.GetLength(0) - 1;
+      //          else
+      //              xOffset += smallHeightFigure.GetLength(0) - 1;
 
                 bool[,] smallWidthFigure = Extend(smallHeightFigure, bigHeightFigure.GetLength(0), smallHeightFigure.GetLength(1), x, 0);
                 if (templateIsLessHight)
@@ -113,8 +113,8 @@ public class Level {
 
                     if (templateIsLessWidth)
                         yOffset -= smallWidthFigure.GetLength(1) - 1;
-                    else
-                        yOffset += smallWidthFigure.GetLength(1) - 1;
+      //              else
+      //                  yOffset += smallWidthFigure.GetLength(1) - 1;
 
                     bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1), 0, y);   //увеличим до нужной ширины
                     if (templateIsLessWidth)
@@ -156,12 +156,14 @@ public class Level {
         }
         private float SimpleComparate(bool[,] matrix1, bool[,] matrix2)
         {
-            float maximum = matrix1.GetLength(0) * matrix1.GetLength(1);
+            float maximum = 0;
             float count = 0;
             for (int x = 0; x < matrix1.GetLength(0); x++)
                 for (int y = 0; y < matrix1.GetLength(1); y++)
-                    if (matrix1[x, y] == matrix2[x, y]) count++;
-
+                {
+                    if (matrix1[x, y] || matrix2[x, y]) maximum++;
+                    if (matrix1[x, y] && matrix2[x, y]) count++;
+                }
              return count/ maximum;
         }
 
@@ -224,6 +226,6 @@ public class Level {
 
     private static void CalculateCallback(float result)
     {
-        TaskMenu.Instance.SetScore(result);
+        GameMenu.Instance.SetScore(result);
     }
 }
