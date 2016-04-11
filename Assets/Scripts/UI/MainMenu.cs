@@ -22,6 +22,7 @@ public class MainMenu : MonoBehaviour {
 
     public void Quit()
     {
+        SoundPattern.PlayClickSound();
         Application.Quit();
     }
 
@@ -31,6 +32,7 @@ public class MainMenu : MonoBehaviour {
     }
     public void PlayButton()
     {
+        SoundPattern.PlayClickSound();
         GetComponent<Animator>().SetTrigger("FadeOut");
     }
 }

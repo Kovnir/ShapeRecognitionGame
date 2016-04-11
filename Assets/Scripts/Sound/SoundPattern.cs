@@ -9,17 +9,12 @@ using UnityEditor;
 [System.Serializable] //Сериализуемый класс
 public class SoundPattern : ScriptableObject {
     
-    public AudioClip coverOnClip;                                           //Опускание ширмы экранного перехода
-    public AudioClip coverOffClip;                                          //Поднятие ширмы экранного перехода
-    public AudioClip buttonClickClip;                                       //Клик на кнопке
-    public AudioClip catchClip;                                             //Взятие карты
-    public AudioClip dropClip;                                              //Бросание карты на стопку                              
-    public AudioClip failDropClip;                                          //Бросание карты мимо стопки (или на заполненную стопку)
-    public AudioClip matchClip;                                             //Собирание слова (исчезновение начисление очков)
-    public AudioClip looseClip;                                             //Проигрыш
-    public AudioClip newCardClip;                                           //Появление новой карты
-    public AudioClip startCountdownClip;                                    //Начальный отсчёт (три секундных отсчёта и надпись “старт”)
-    public AudioClip tickClip;                                              //звук тиканья таймера
+    public AudioClip click;
+    public AudioClip bubble;
+    public AudioClip perfect;
+    public AudioClip win;
+    public AudioClip loose;
+
 
     private static SoundPattern _instance;                                  //ссылка на себя же
 
@@ -79,15 +74,10 @@ public class SoundPattern : ScriptableObject {
     }
 
 
-    public static void PlayCovenOnSound() { instance.Play(instance.coverOnClip); }
-    public static void PlayCovenOffSound() { instance.Play(instance.coverOffClip); }
-    public static void PlayButtonClickSound() { instance.Play(instance.buttonClickClip); }
-    public static void PlayCatchSound() { instance.Play(instance.catchClip); }
-    public static void PlayDropSound() { instance.Play(instance.dropClip); }
-    public static void PlayFailDropSound() { instance.Play(instance.failDropClip); }
-    public static void PlayMatchSound() { instance.Play(instance.matchClip); }
-    public static void PlayLooseSound() { instance.Play(instance.looseClip); }
-    public static void PlayNewCardSound() { instance.Play(instance.newCardClip); }
-    public static void PlayStartCountdownSound() { instance.Play(instance.startCountdownClip); }
-    public static void PlayTickSound() { instance.Play(instance.tickClip); }
+    public static void PlayBubbleSound() { instance.Play(instance.bubble); }
+    public static void PlayClickSound() { instance.Play(instance.click); }
+    public static void PlayWinSound() { instance.Play(instance.win); }
+    public static void PlayPerfectSound() { instance.Play(instance.perfect); }
+    public static void PlayLooseSound() { instance.Play(instance.loose); }
+
 }

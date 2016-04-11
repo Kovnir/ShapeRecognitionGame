@@ -46,6 +46,7 @@ public class QubeBehaviour : MonoBehaviour
                 FieldController.Instance.OnMouseExit();
             return;
         }
+        SoundPattern.PlayBubbleSound();
         rend.material.SetColor("_Color", activeColor);
         currentColor = activeColor;
         selected = true;

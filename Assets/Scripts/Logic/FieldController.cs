@@ -184,16 +184,23 @@ public class FieldController : MonoBehaviour
         {
             CountDown.Instance.Continue();
             PercentCanvas.ShowBad(percents);
+            SoundPattern.PlayLooseSound();
             turnAllowed = true;
             return;       
         }
         if (percents == 100)
+        {
+            SoundPattern.PlayPerfectSound();
             PercentCanvas.ShowPerfect();
+        }
         else
+        {
+            SoundPattern.PlayWinSound();
             PercentCanvas.ShowGood(percents);
-
+        }
         GameController.Instance.NextFigure();
         currentScore++;
+        GameMenu.Instance.SetScore(currentScore);
         GameStats.SetScore((uint) currentScore);
     }
 
