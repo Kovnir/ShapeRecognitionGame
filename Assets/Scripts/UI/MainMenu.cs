@@ -7,6 +7,8 @@ public class MainMenu : MonoBehaviour {
 
     [SerializeField]
     private Text score = null;
+    [SerializeField]
+    private Text buttonText = null;
 
     public void Awake()
     {
@@ -16,6 +18,7 @@ public class MainMenu : MonoBehaviour {
 //                score.text = "Score: " + GameStats.lastScore + "\nBest: " + GameStats.lastScore;
 //            if (GameStats.bestScore == GameStats.lastScore)
                 score.text = "Best score = " + GameStats.bestScore;
+            buttonText.text = "Replay";
         }
     }
     
