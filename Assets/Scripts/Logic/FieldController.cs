@@ -40,6 +40,8 @@ public class FieldController : MonoBehaviour
     private uint figureXOffset;
     private uint figureYOffset;
 
+    private int currentScore = 0;
+
     void Awake()
     {
         instance = this;
@@ -129,8 +131,8 @@ public class FieldController : MonoBehaviour
     }
     private IEnumerator ComporateFinishCoroutine(Level.LevelGrid grid, int xOffset, int yOffset, float result)
     {
-        Debug.Log(xOffset + " " + yOffset);
-        //        bool[,] array = grid.Extend((int)HEIGHT, (int)width, xOffset + (int)figureXOffset, yOffset + (int)figureYOffset);
+        CountDown.Instance.Pause();
+
         int xBegin = xOffset + (int)figureXOffset;
         int yBegin = yOffset + (int)figureYOffset;
 
@@ -165,7 +167,7 @@ public class FieldController : MonoBehaviour
                         columns[i, j].SetCheckingColor();
                 }
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
         }
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < width; j++)
@@ -178,9 +180,23 @@ public class FieldController : MonoBehaviour
     
     private void Check(float result)
     {
-        if (result < 75)
-        GameMenu.Instance.SetScore(result);
+        int percents = Mathf.RoundToInt(result*100);
+        Debug.Log(percents);
+        if (percents < CORRECT_PERCENTS)
+        {
+            CountDown.Instance.Continue();
+            PercentCanvas.ShowBad(percents);
+            turnAllowed = true;
+            return;       
+        }
+        if (percents == 100)
+            PercentCanvas.ShowPerfect();
+        else
+            PercentCanvas.ShowGood(percents);
+
         GameController.Instance.NextFigure();
+        currentScore++;
+        GameStats.SetScore((uint) currentScore);
     }
 
 

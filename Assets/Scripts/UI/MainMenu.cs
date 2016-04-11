@@ -12,10 +12,10 @@ public class MainMenu : MonoBehaviour {
     {
         if (GameStats.lastScore != -1)
         {
-            if (GameStats.bestScore > GameStats.lastScore)
-                score.text = "Score = " + GameStats.lastScore + "; Best = " + GameStats.lastScore;
-            if (GameStats.bestScore == GameStats.lastScore)
-                score.text = "Score = " + GameStats.lastScore;
+//            if (GameStats.bestScore > GameStats.lastScore)
+//                score.text = "Score: " + GameStats.lastScore + "\nBest: " + GameStats.lastScore;
+//            if (GameStats.bestScore == GameStats.lastScore)
+                score.text = "Best score = " + GameStats.bestScore;
         }
     }
 

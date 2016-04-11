@@ -24,10 +24,20 @@ public class GameCover : MonoBehaviour {
 
     public void GameOver()
     {
+        Invoke("GameOverShow", 1);
+    }
+    private void GameOverShow()
+    {
         endText.text = "Game Over =(";
         GetComponent<Animator>().SetTrigger("FadeIn");
     }
+
     public void FiguresOver()
+    {
+        Invoke("FiguresOverShow", 1);
+    }
+
+    private void FiguresOverShow()
     {
         endText.text = "No more figures =)";
         GetComponent<Animator>().SetTrigger("FadeIn");

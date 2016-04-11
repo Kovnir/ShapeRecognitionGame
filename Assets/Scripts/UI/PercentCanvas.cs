@@ -27,19 +27,19 @@ public class PercentCanvas : MonoBehaviour {
     {
         instance.text.text = "Good!\n" + percents + "%";
         instance.text.color = instance.goodColor;
-        instance.animator.SetTrigger("GoodShow");
+        instance.animator.SetTrigger("ShowGood");
     }
     public static void ShowPerfect()
     {
         instance.text.text = "Perfect!\n100%";
         instance.text.color = instance.perfectColor;
-        instance.animator.SetTrigger("GoodPerfect");
+        instance.animator.SetTrigger("ShowPerfect");
     }
     public static void ShowBad(int percents)
     {
         instance.text.text = "Bad!\n" + percents + "%";
         instance.text.color = instance.badColor;
-        instance.animator.SetTrigger("GoodShow");
+        instance.animator.SetTrigger("ShowBad");
     }
 
 }

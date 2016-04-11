@@ -28,6 +28,10 @@ public class CountDown : MonoBehaviour {
     {
         isPaused = true;
     }
+    public void Continue()
+    {
+        isPaused = false;
+    }
 
     public void Stop()
     {
