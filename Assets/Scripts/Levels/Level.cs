@@ -113,12 +113,18 @@ public class Level {
                         best = newScore;
                         bestXOffset = xOffset;
                         bestYOffset = yOffset;
+                        if (best == 1)
+                        {
+                            xOfsetOut = bestXOffset;
+                            yOfsetOut = bestYOffset;
+
+                            return best;
+                        }
                     }
                 }
             }
             xOfsetOut = bestXOffset;
             yOfsetOut = bestYOffset;
-            
             return best;
         }
 
@@ -136,12 +142,13 @@ public class Level {
         }
         private float SimpleComparate(bool[,] matrix1, bool[,] matrix2)
         {
+            float maximum = matrix1.GetLength(0) * matrix1.GetLength(1);
             float count = 0;
             for (int x = 0; x < matrix1.GetLength(0); x++)
                 for (int y = 0; y < matrix1.GetLength(1); y++)
-                    if (matrix1[x, y] && matrix2[x, y]) count++;
+                    if (matrix1[x, y] == matrix2[x, y]) count++;
 
-             return count;
+             return count/ maximum;
         }
 
     }
@@ -160,6 +167,10 @@ public class Level {
         return level;
     }
 
+    public void SortGrids()
+    {
+        grids = grids.OrderBy((x) => x.height*x.width).ToList();
+    }
 
     public void Compare(bool[,] usersFigure)
     {
@@ -171,15 +182,17 @@ public class Level {
             int xOffset = 0;
             int yOffset = 0;
             Level.LevelGrid resultGrid = null;
-            grids.ForEach(x =>
+            foreach (LevelGrid grid in grids)
             {
-                float newResult = x.Comparate(usersFigure, out xOffset, out yOffset);
+                float newResult = grid.Comparate(usersFigure, out xOffset, out yOffset);
                 if (newResult > result)
                 {
                     result = newResult;
-                    resultGrid = x;
+                    resultGrid = grid;
+                    if (result == 1)
+                        break;
                 }
-            });
+            }
             ThreadManager.Instance.Execute(() =>
             {
                 FieldController.Instance.ComporateFinish(resultGrid.Clone(), xOffset, yOffset, result);

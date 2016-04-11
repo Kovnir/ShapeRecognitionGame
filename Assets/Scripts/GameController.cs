@@ -18,6 +18,7 @@ public sealed class GameController {
     public void StartGame()
     {
         levels = LevelsCollection.instance.levels;
+        levels.ForEach((x) =>x.SortGrids());
         MixList(levels);
         currentLevel = -1;
         InitializeTimeList();
