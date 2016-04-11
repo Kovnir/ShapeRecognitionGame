@@ -32,16 +32,12 @@ public sealed class GameController {
     private void InitializeTimeList()
     {
         times = new List<int>();
-        times.Add(10);
-        times.Add(9);
-        times.Add(8);
-        times.Add(7);
-        times.Add(6);
-        times.Add(5);
-        times.Add(4);
-        times.Add(4);
-        times.Add(4);
-        times.Add(4);
+        int current = 10;
+        for (int i = 0; i < levels.Count; i++)
+        {
+            times.Add(current);
+            if (current > 4) current--; 
+        }
     }
 
     internal void GameOver()
