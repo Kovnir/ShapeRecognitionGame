@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Threading;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -58,9 +58,13 @@ public class Level {
             return result;
         }
  
-        public float Comparate(bool[,] usersFigure)
+        public float Comparate(bool[,] usersFigure, out int xOfsetOut, out int yOfsetOut)
         {
             float best = 0;
+            int bestXOffset = 0;
+            int bestYOffset = 0;
+            bool templateIsSmaller = true;
+
             bool[,] smallHeightFigure = GetArray();            //меньшая по ширине фигура
             bool[,] bigHeightFigure = usersFigure;       //большая по ширине фигура
             //если не угадали - поменяем местами
@@ -69,11 +73,20 @@ public class Level {
                 bool[,] buffer = smallHeightFigure;
                 smallHeightFigure = bigHeightFigure;
                 bigHeightFigure = buffer;
+                templateIsSmaller = !templateIsSmaller;
             }
 
+            bigHeightFigure = Extend(bigHeightFigure, bigHeightFigure.GetLength(0) + smallHeightFigure.GetLength(0) * 2 - 2, bigHeightFigure.GetLength(1), smallHeightFigure.GetLength(0), 0);
+
             for (int x = 0; x < bigHeightFigure.GetLength(0) - smallHeightFigure.GetLength(0) + 1; x++)
-            {                
-                bool[,] smallWidthFigure = Extend(smallHeightFigure, bigHeightFigure.GetLength(0), smallHeightFigure.GetLength(1), x, 0);   //увеличим до нужной ширины
+            {
+                int xOffset = 0;
+                bool[,] smallWidthFigure = Extend(smallHeightFigure, bigHeightFigure.GetLength(0), smallHeightFigure.GetLength(1), x, 0);
+                if (templateIsSmaller)
+                {
+                    xOffset = x;
+                }
+                //увеличим до нужной ширины
                 bool[,] bigWidthFigure = bigHeightFigure;       //большая по высоте фигура
                                                                 //если не угадали - поменяем местами
                 if (smallWidthFigure.GetLength(1) > bigWidthFigure.GetLength(1))
@@ -81,18 +94,33 @@ public class Level {
                     bool[,] buffer = smallWidthFigure;
                     smallWidthFigure = bigWidthFigure;
                     bigWidthFigure = buffer;
+                    templateIsSmaller = !templateIsSmaller;
                 }
                 for (int y = 0; y < bigWidthFigure.GetLength(1) - smallWidthFigure.GetLength(1) + 1; y++)
                 {
-                    bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1), 0, y);   //увеличим до нужной ширины
+                    int yOffset = 0;
+                    bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1)-1, 0, y);   //увеличим до нужной ширины
+                    if (templateIsSmaller)
+                    {
+                        yOffset = y;
+                    }
                     float newScore = SimpleComparate(smallWidthModifiedFigure, bigWidthFigure);
-                    if (newScore > best) best = newScore;
+                    if (newScore > best)
+                    {
+                        best = newScore;
+                        bestXOffset = xOffset;
+                        bestYOffset = yOffset;
+                        Debug.Log(bestXOffset + " "+ bestYOffset);
+                    }
                 }
             }
+            xOfsetOut = bestXOffset;
+            yOfsetOut = bestYOffset;
             return best;
+
         }
 
-        private bool[,] Extend(bool[,] matrix, int newHeight, int newWidth, int newX, int newY)
+        public static bool[,] Extend(bool[,] matrix, int newHeight, int newWidth, int newX, int newY)
         {
             bool[,] newMatrix = new bool[newHeight, newWidth];
             for (int x = 0; x < matrix.GetLength(0); x++)
@@ -100,7 +128,10 @@ public class Level {
                     newMatrix[x + newX, y + newY] = matrix[x, y];
             return newMatrix;
         }
-
+        public bool[,] Extend(int newHeight, int newWidth, int newX, int newY)
+        {
+            return Extend(GetArray(), newHeight, newWidth, newX, newY);
+        }
         private float SimpleComparate(bool[,] matrix1, bool[,] matrix2)
         {
             float count = 0;
@@ -113,21 +144,6 @@ public class Level {
 
     }
 
-    public void Compare(bool[,] usersFigure)
-    {
-        float result = 0;
-     //   GridLine[] grid;
-        grids.ForEach(x =>
-        {
-            float newResult = x.Comparate(usersFigure);
-            if (newResult > result)
-            {
-                result = newResult;
-      //          grid = x.grid;
-            }
-        });
-        Debug.Log(result);
-    }
 
     public Sprite sprite;
     public string name;
@@ -140,5 +156,42 @@ public class Level {
         level.grids = new List<LevelGrid>();
         grids.ForEach((x) => level.grids.Add(x.Clone()));
         return level;
+    }
+
+
+    public void Compare(bool[,] usersFigure)
+    {
+        Thread thread = null;
+
+        Action threadAction = () =>
+        {
+            float result = float.MinValue;
+            int xOffset = 0;
+            int yOffset = 0;
+            Level.LevelGrid resultGrid = null;
+            grids.ForEach(x =>
+            {
+                float newResult = x.Comparate(usersFigure, out xOffset, out yOffset);
+                if (newResult > result)
+                {
+                    result = newResult;
+                    resultGrid = x;
+                }
+            });
+            ThreadManager.Instance.Execute(() =>
+            {
+                FieldController.Instance.ComporateFinish(resultGrid.Clone(), xOffset, yOffset, result);
+                thread.Interrupt(); //данное действие очень важно в конце всей последовательности
+            });
+        };
+
+        thread = new Thread(new ThreadStart(threadAction));
+        thread.Start();
+    }
+
+    private static void CalculateCallback(float result)
+    {
+        TaskMenu.Instance.SetScore(result);
+//        Debug.Log(result);
     }
 }

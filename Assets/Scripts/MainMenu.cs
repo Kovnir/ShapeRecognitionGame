@@ -6,7 +6,7 @@ using System.Collections;
 public class MainMenu : MonoBehaviour {
 
     [SerializeField]
-    private Text score;
+    private Text score = null;
 
     public void Awake()
     {

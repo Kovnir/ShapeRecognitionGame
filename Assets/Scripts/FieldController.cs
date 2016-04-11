@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using System;
 
+using System.Collections;
+using System.Collections.Generic;
+
 public class FieldController : MonoBehaviour
 {
     [SerializeField]
     private const uint HEIGHT = 10;
     private uint width;
-    
+
     //массив частиц на поле
     protected QubeBehaviour[,] columns;
 
-    public bool isMouseDowned = false;
+    private bool isMouseDowned = false;
 
     //"затухание" цвета
     [Range(0f, 2.0f)]
@@ -19,12 +22,20 @@ public class FieldController : MonoBehaviour
 
     public Color idle;
     public Color active;
+    public Color correct;
+    public Color incorrect;
+    public Color missing;
+
+    public bool turnAllowed = false;
 
     //закешированный трансформ
     protected Transform tr;
 
     private static FieldController instance;
     public static FieldController Instance { get { return instance; } }
+
+    private uint figureXOffset;
+    private uint figureYOffset;
 
     void Awake()
     {
@@ -34,7 +45,7 @@ public class FieldController : MonoBehaviour
 
     protected virtual void Start()
     {
-        width = (uint) (Camera.main.pixelWidth / (Camera.main.pixelHeight / (Camera.main.orthographicSize*2)))+1;
+        width = (uint)(Camera.main.pixelWidth / (Camera.main.pixelHeight / (Camera.main.orthographicSize * 2))) + 1;
         GameObject simpleParticle = (GameObject)Resources.Load("Prefubs/SimpleParticle");
         if (simpleParticle == null)
         {
@@ -47,15 +58,18 @@ public class FieldController : MonoBehaviour
             {
                 GameObject newObj = Instantiate(simpleParticle);
                 columns[i, j] = newObj.GetComponent<QubeBehaviour>();
-              //  columns[i, j].position = new Vector2(i, j);
-                Vector3 newPosition = new Vector3(j - width / 2f+0.5f, 0, i - HEIGHT / 2f+ 0.5f);
+                //  columns[i, j].position = new Vector2(i, j);
+                Vector3 newPosition = new Vector3(j - width / 2f + 0.5f, 0, i - HEIGHT / 2f + 0.5f);
                 newObj.transform.position = newPosition;
                 newObj.transform.SetParent(tr);
             }
 
         QubeBehaviour.idleColor = idle;
         QubeBehaviour.activeColor = active;
+        QubeBehaviour.correctColor = correct;
+        QubeBehaviour.incorrectColor = incorrect;
 
+        QubeBehaviour.missingColor = missing;
         QubeBehaviour.attenuation = attenuation;
 
     }
@@ -67,15 +81,17 @@ public class FieldController : MonoBehaviour
     }
     public virtual void OnMouseExit()
     {
+        if (!isMouseDowned) return;
         isMouseDowned = false;
+        turnAllowed = false;
 
         bool[,] fullResult = new bool[HEIGHT, width];   //вся карта
 
 
         uint minX = HEIGHT; //надо будет запомнить
         uint minY = width; //надо будет запомнить
-        uint maxX = 0; //надо будет запомнить
-        uint maxY = 0; //надо будет запомнить
+        uint maxX = 0;
+        uint maxY = 0;
 
         for (uint x = 0; x < HEIGHT; x++)
             for (uint y = 0; y < width; y++)
@@ -96,14 +112,50 @@ public class FieldController : MonoBehaviour
                 partialResult[x - minX, y - minY] = fullResult[x, y];
             }
         GameController.Instance.Comparate(partialResult);
+
+        figureXOffset = minX;
+        figureYOffset = minY;
+    }
+
+
+    public void ComporateFinish(Level.LevelGrid grid, int xOffset, int yOffset, float result)
+    {
+        StartCoroutine(ComporateFinishCoroutine(grid, xOffset, yOffset, result));
+    }
+    private IEnumerator ComporateFinishCoroutine(Level.LevelGrid grid, int xOffset, int yOffset, float result)
+    {
+        //        Debug.Log(figureXOffset + " " + figureYOffset);
+        bool[,] array = grid.Extend((int)HEIGHT, (int)width, xOffset + (int)figureXOffset, yOffset + (int)figureYOffset);
+        for (int i = 0; i < HEIGHT; i++)
+        {
+            yield return new WaitForSeconds(0.1f);
+            for (int j = 0; j < width; j++)
+            {
+                columns[i, j].SetCheckingColor();
+                if (array[i, j])
+                {
+                    if (columns[i, j].selected)
+                        columns[i, j].SetCorrectColor();
+                    else
+                        columns[i, j].SetMissingColor();
+                }
+                else
+                {
+                    if (columns[i, j].selected)
+                        columns[i, j].SetIncorrectColor();
+                }
+            }
+        }
+
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < width; j++)
             {
                 columns[i, j].selected = false;
             }
+        TaskMenu.Instance.SetScore(result);
+
     }
-
-
+    
     protected float GetDistance(int x1, int y1, int x2, int y2)
     {
         return Mathf.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));

@@ -20,6 +20,7 @@ public sealed class GameController {
     {
         currentLevel = LevelsCollection.instance.levels[1];
         TaskMenu.Instance.SetFigure(currentLevel.sprite, 10);
+        FieldController.Instance.turnAllowed = true;
     }
 
     public void Comparate(bool[,] usersFigure)
