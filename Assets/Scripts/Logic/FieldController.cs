@@ -20,6 +20,8 @@ public class FieldController : MonoBehaviour
     [SerializeField]
     protected float attenuation = 0.5f;
 
+    public const float CORRECT_PERCENTS = 75;
+
     public Color idle;
     public Color active;
     public Color correct;
@@ -176,6 +178,7 @@ public class FieldController : MonoBehaviour
     
     private void Check(float result)
     {
+        if (result < 75)
         GameMenu.Instance.SetScore(result);
         GameController.Instance.NextFigure();
     }
