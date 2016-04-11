@@ -11,7 +11,6 @@ public class CountDown : MonoBehaviour {
     public static CountDown Instance { get { return instance; } }
     private bool isPaused = false;
 
-
     void Awake()
     {
         instance = this;
