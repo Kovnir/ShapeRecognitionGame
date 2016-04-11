@@ -25,6 +25,7 @@ public class FieldController : MonoBehaviour
     public Color correct;
     public Color incorrect;
     public Color missing;
+    public Color checking;
 
     public bool turnAllowed = false;
 
@@ -68,6 +69,7 @@ public class FieldController : MonoBehaviour
         QubeBehaviour.activeColor = active;
         QubeBehaviour.correctColor = correct;
         QubeBehaviour.incorrectColor = incorrect;
+        QubeBehaviour.checkingColor = checking;
 
         QubeBehaviour.missingColor = missing;
         QubeBehaviour.attenuation = attenuation;
@@ -120,31 +122,48 @@ public class FieldController : MonoBehaviour
 
     public void ComporateFinish(Level.LevelGrid grid, int xOffset, int yOffset, float result)
     {
+        Debug.Log("ComporateFinish");
         StartCoroutine(ComporateFinishCoroutine(grid, xOffset, yOffset, result));
     }
     private IEnumerator ComporateFinishCoroutine(Level.LevelGrid grid, int xOffset, int yOffset, float result)
     {
-        //        Debug.Log(figureXOffset + " " + figureYOffset);
-        bool[,] array = grid.Extend((int)HEIGHT, (int)width, xOffset + (int)figureXOffset, yOffset + (int)figureYOffset);
+        Debug.Log(xOffset + " " + yOffset);
+        //        bool[,] array = grid.Extend((int)HEIGHT, (int)width, xOffset + (int)figureXOffset, yOffset + (int)figureYOffset);
+        int xBegin = xOffset + (int)figureXOffset;
+        int yBegin = yOffset + (int)figureYOffset;
+
+        int xEnd = xBegin + grid.height;
+        int yEnd = yBegin + grid.width;
         for (int i = 0; i < HEIGHT; i++)
         {
-            yield return new WaitForSeconds(0.1f);
             for (int j = 0; j < width; j++)
             {
-                columns[i, j].SetCheckingColor();
-                if (array[i, j])
+                if (i >= xBegin && j >= yBegin && i < xEnd && j < yEnd)
                 {
-                    if (columns[i, j].selected)
-                        columns[i, j].SetCorrectColor();
+                    if (grid.grid[i - xBegin][j - yBegin])
+                    {
+                        if (columns[i, j].selected)
+                            columns[i, j].SetCorrectColor();
+                        else
+                            columns[i, j].SetMissingColor();
+                    }
                     else
-                        columns[i, j].SetMissingColor();
+                    {
+                        if (columns[i, j].selected)
+                            columns[i, j].SetIncorrectColor();
+                        else
+                            columns[i, j].SetCheckingColor();
+                    }
                 }
                 else
                 {
                     if (columns[i, j].selected)
                         columns[i, j].SetIncorrectColor();
+                    else
+                        columns[i, j].SetCheckingColor();
                 }
             }
+            yield return new WaitForSeconds(0.1f);
         }
 
         for (int i = 0; i < HEIGHT; i++)
@@ -153,7 +172,7 @@ public class FieldController : MonoBehaviour
                 columns[i, j].selected = false;
             }
         TaskMenu.Instance.SetScore(result);
-
+        turnAllowed = true;
     }
     
     protected float GetDistance(int x1, int y1, int x2, int y2)

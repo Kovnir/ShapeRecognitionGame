@@ -18,7 +18,7 @@ public sealed class GameController {
 
     public void NextFigure()
     {
-        currentLevel = LevelsCollection.instance.levels[1];
+        currentLevel = LevelsCollection.instance.levels[0];
         TaskMenu.Instance.SetFigure(currentLevel.sprite, 10);
         FieldController.Instance.turnAllowed = true;
     }

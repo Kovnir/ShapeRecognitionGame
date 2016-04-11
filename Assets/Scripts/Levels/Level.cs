@@ -76,7 +76,7 @@ public class Level {
                 templateIsSmaller = !templateIsSmaller;
             }
 
-            bigHeightFigure = Extend(bigHeightFigure, bigHeightFigure.GetLength(0) + smallHeightFigure.GetLength(0) * 2 - 2, bigHeightFigure.GetLength(1), smallHeightFigure.GetLength(0), 0);
+            bigHeightFigure = Extend(bigHeightFigure, bigHeightFigure.GetLength(0) + 2, bigHeightFigure.GetLength(1), 1, 0);
 
             for (int x = 0; x < bigHeightFigure.GetLength(0) - smallHeightFigure.GetLength(0) + 1; x++)
             {
@@ -84,7 +84,7 @@ public class Level {
                 bool[,] smallWidthFigure = Extend(smallHeightFigure, bigHeightFigure.GetLength(0), smallHeightFigure.GetLength(1), x, 0);
                 if (templateIsSmaller)
                 {
-                    xOffset = x;
+                    xOffset = x-1;
                 }
                 //увеличим до нужной ширины
                 bool[,] bigWidthFigure = bigHeightFigure;       //большая по высоте фигура
@@ -96,13 +96,16 @@ public class Level {
                     bigWidthFigure = buffer;
                     templateIsSmaller = !templateIsSmaller;
                 }
+
+                bigWidthFigure = Extend(bigWidthFigure, bigWidthFigure.GetLength(0), bigWidthFigure.GetLength(1)+2, 0, 1);
+
                 for (int y = 0; y < bigWidthFigure.GetLength(1) - smallWidthFigure.GetLength(1) + 1; y++)
                 {
                     int yOffset = 0;
-                    bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1)-1, 0, y);   //увеличим до нужной ширины
+                    bool[,] smallWidthModifiedFigure = Extend(smallWidthFigure, smallWidthFigure.GetLength(0), bigWidthFigure.GetLength(1), 0, y);   //увеличим до нужной ширины
                     if (templateIsSmaller)
                     {
-                        yOffset = y;
+                        yOffset = y-1;
                     }
                     float newScore = SimpleComparate(smallWidthModifiedFigure, bigWidthFigure);
                     if (newScore > best)
@@ -110,14 +113,13 @@ public class Level {
                         best = newScore;
                         bestXOffset = xOffset;
                         bestYOffset = yOffset;
-                        Debug.Log(bestXOffset + " "+ bestYOffset);
                     }
                 }
             }
             xOfsetOut = bestXOffset;
             yOfsetOut = bestYOffset;
+            
             return best;
-
         }
 
         public static bool[,] Extend(bool[,] matrix, int newHeight, int newWidth, int newX, int newY)
@@ -192,6 +194,5 @@ public class Level {
     private static void CalculateCallback(float result)
     {
         TaskMenu.Instance.SetScore(result);
-//        Debug.Log(result);
     }
 }

@@ -13,6 +13,7 @@ public class QubeBehaviour : MonoBehaviour
     public static Color activeColor;
     public static Color correctColor;
     public static Color incorrectColor;
+    public static Color checkingColor;
     public static Color missingColor;
 
     public static float attenuation;
@@ -78,6 +79,10 @@ public class QubeBehaviour : MonoBehaviour
     {
         currentColor = missingColor;
     }
+    internal void SetCheckingColor()
+    {
+        currentColor = checkingColor;
+    }
 
     private void Update()
     {
@@ -85,8 +90,4 @@ public class QubeBehaviour : MonoBehaviour
         rend.material.SetColor("_Color", currentColor);
     }
 
-    internal void SetCheckingColor()
-    {
-        currentColor = activeColor;
-    }
 }
